@@ -1,0 +1,34 @@
+import com.github.jreddit.entity.Submission;
+import com.github.jreddit.utils.restclient.HttpRestClient;
+import com.github.jreddit.utils.restclient.RestClient;
+import com.github.jreddit.utils.restclient.RestClientUser;
+import com.github.jreddit.utils.restclient.okhttp.OkHttpRestClient;
+import com.github.jreddit.utils.restclient.okhttp.OkHttpRestUser;
+
+import java.util.List;
+
+public class RedditBot {
+
+    public static void main(String[] args) throws Exception {
+        // Create Reddit client
+        RestClient restClient = new OkHttpRestClient();
+        restClient.setUserAgent(BotConfig.USER_AGENT);
+        RestClientUser redditUser = new OkHttpRestUser(restClient, BotConfig.CLIENT_ID, BotConfig.CLIENT_SECRET,
+                BotConfig.REDDIT_USERNAME, BotConfig.REDDIT_PASSWORD);
+
+        // Fetch top submissions from a subreddit
+        String subreddit = "programming";
+        List<Submission> submissions = redditUser.getSubmissions(subreddit, null, null, -1, 100, null, null, true);
+
+        // Print titles of top submissions
+        for (Submission submission : submissions) {
+            System.out.println(submission.getTitle());
+        }
+
+        // Example: Post a comment on a submission
+        if (!submissions.isEmpty()) {
+            Submission post = submissions.get(0);
+            redditUser.comment(post, "Hello from RedditBot!");
+        }
+    }
+}
